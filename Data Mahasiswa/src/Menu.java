@@ -190,7 +190,7 @@ public class Menu extends JFrame{
         // pengecekan form
         if (nim.isEmpty() || nama.isEmpty() || jenisKelamin.isEmpty() || jalurMasuk.isEmpty())
         {
-            JOptionPane.showMessageDialog(null, "Isi semua kolom!", "Peringatan", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Ada kolom yang masih kosong, isi semuanya!!", "Peringatan", JOptionPane.WARNING_MESSAGE);
             return;
         }
         else {
@@ -222,11 +222,20 @@ public class Menu extends JFrame{
 
     public void updateData() {
         // ambil data dari form
-        String id = mahasiswaTable.getValueAt(selectedIndex, 0).toString();
         String nim = nimField.getText();
         String nama = namaField.getText();
         String jenisKelamin = jenisKelaminComboBox.getSelectedItem().toString();
         String jalurMasuk = getSelectedJalurMasuk();
+        
+        String id = "";
+        try {
+            ResultSet resultSet = database.selectQuery("SELECT id FROM mahasiswa WHERE nim = '" + nim + "';");
+            while (resultSet.next()) {
+                id = resultSet.getString("id");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
         // pengecekan form
         if (nim.isEmpty() || nama.isEmpty() || jenisKelamin.isEmpty() || jalurMasuk.isEmpty())
@@ -252,7 +261,16 @@ public class Menu extends JFrame{
 
     public void deleteData() {
         // hapus data dari list
-        String id = mahasiswaTable.getValueAt(selectedIndex, 0).toString();
+        String nim = nimField.getText();
+        String id = "";
+        try {
+            ResultSet resultSet = database.selectQuery("SELECT id FROM mahasiswa WHERE nim = '" + nim + "';");
+            while (resultSet.next()) {
+                id = resultSet.getString("id");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         String sql = "DELETE FROM mahasiswa WHERE id = '" + id + "';";
         database.insertUpdateDeleteQuery(sql);
 
